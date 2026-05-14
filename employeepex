@@ -1,0 +1,468 @@
+# Salesforce Console-Based Application — Employee Management System
+
+## Assignment Chosen
+
+### Employee Management System
+
+Develop a menu-driven Employee Management System that manages:
+
+* Employee ID
+* Employee Name
+* Email
+* Birth Date
+* Department
+
+Using Salesforce Apex (Console Based).
+
+---
+
+# Goal of This Assignment
+
+You will create:
+
+1. A custom Employee object
+2. Fields inside the object
+3. An Apex class
+4. CRUD operations:
+
+   * Add Employee
+   * View Employees
+   * Update Employee
+   * Delete Employee
+5. Execute everything using Anonymous Apex Console
+
+---
+
+# PART 1 — Create Salesforce Developer Account
+
+## Step 1
+
+Open:
+[https://developer.salesforce.com/signup](https://developer.salesforce.com/signup)
+
+Create a free Salesforce Developer Account.
+
+After signup:
+
+* Verify email
+* Login to Salesforce
+
+---
+
+# PART 2 — Create Custom Object
+
+## Step 2
+
+Open:
+Setup → Object Manager → Create → Custom Object
+
+Fill:
+
+| Field        | Value     |
+| ------------ | --------- |
+| Label        | Employee  |
+| Plural Label | Employees |
+| Object Name  | Employee  |
+
+Click Save.
+
+---
+
+# PART 3 — Create Fields
+
+Inside Employee Object:
+
+Go to:
+Object Manager → Employee → Fields & Relationships → New
+
+Create the following fields.
+
+---
+
+## 1. Employee ID
+
+| Property  | Value  |
+| --------- | ------ |
+| Data Type | Number |
+| Label     | Emp_ID |
+| Length    | 10     |
+
+---
+
+## 2. Employee Name
+
+| Property  | Value    |
+| --------- | -------- |
+| Data Type | Text     |
+| Label     | Emp_Name |
+| Length    | 100      |
+
+---
+
+## 3. Email
+
+| Property  | Value |
+| --------- | ----- |
+| Data Type | Email |
+| Label     | Email |
+
+---
+
+## 4. Birth Date
+
+| Property  | Value      |
+| --------- | ---------- |
+| Data Type | Date       |
+| Label     | Birth_Date |
+
+---
+
+## 5. Department
+
+| Property  | Value      |
+| --------- | ---------- |
+| Data Type | Text       |
+| Label     | Department |
+| Length    | 50         |
+
+---
+
+# PART 4 — Create Apex Class
+
+## Step 4
+
+Go to:
+Setup → Apex Classes → New
+
+Paste the following code.
+
+```java
+public class EmployeeManagementSystem {
+
+    // INSERT EMPLOYEE
+    public static void addEmployee(Integer empId, String empName,
+                                   String email, Date birthDate,
+                                   String dept) {
+
+        Employee__c emp = new Employee__c();
+
+        emp.Emp_ID__c = empId;
+        emp.Emp_Name__c = empName;
+        emp.Email__c = email;
+        emp.Birth_Date__c = birthDate;
+        emp.Department__c = dept;
+
+        insert emp;
+
+        System.debug('Employee Added Successfully');
+    }
+
+
+    // VIEW EMPLOYEES
+    public static void viewEmployees() {
+
+        List<Employee__c> empList = [
+            SELECT Id, Emp_ID__c, Emp_Name__c,
+                   Email__c, Birth_Date__c,
+                   Department__c
+            FROM Employee__c
+        ];
+
+        for(Employee__c emp : empList) {
+            System.debug(
+                'Employee ID: ' + emp.Emp_ID__c +
+                ' Name: ' + emp.Emp_Name__c +
+                ' Email: ' + emp.Email__c +
+                ' Department: ' + emp.Department__c
+            );
+        }
+    }
+
+
+    // UPDATE EMPLOYEE
+    public static void updateEmployee(Integer empId,
+                                      String newDept) {
+
+        Employee__c emp = [
+            SELECT Id, Department__c
+            FROM Employee__c
+            WHERE Emp_ID__c = :empId
+            LIMIT 1
+        ];
+
+        emp.Department__c = newDept;
+
+        update emp;
+
+        System.debug('Employee Updated Successfully');
+    }
+
+
+    // DELETE EMPLOYEE
+    public static void deleteEmployee(Integer empId) {
+
+        Employee__c emp = [
+            SELECT Id
+            FROM Employee__c
+            WHERE Emp_ID__c = :empId
+            LIMIT 1
+        ];
+
+        delete emp;
+
+        System.debug('Employee Deleted Successfully');
+    }
+}
+```
+
+Save the class.
+
+---
+
+# PART 5 — Run the Program
+
+## Step 5
+
+Go to:
+Developer Console → Debug → Open Execute Anonymous Window
+
+Shortcut:
+
+```text
+Ctrl + E
+```
+
+---
+
+# PART 6 — Test Operations
+
+## A. Add Employee
+
+Paste:
+
+```java
+EmployeeManagementSystem.addEmployee(
+    101,
+    'Aditya',
+    'aditya@gmail.com',
+    Date.newInstance(2004, 5, 10),
+    'IT'
+);
+```
+
+Click Execute.
+
+Expected Output:
+
+```text
+Employee Added Successfully
+```
+
+---
+
+## B. View Employees
+
+```java
+EmployeeManagementSystem.viewEmployees();
+```
+
+Expected Output:
+
+```text
+Employee ID: 101 Name: Aditya Email: aditya@gmail.com Department: IT
+```
+
+---
+
+## C. Update Employee
+
+```java
+EmployeeManagementSystem.updateEmployee(
+    101,
+    'HR'
+);
+```
+
+Expected Output:
+
+```text
+Employee Updated Successfully
+```
+
+---
+
+## D. Delete Employee
+
+```java
+EmployeeManagementSystem.deleteEmployee(101);
+```
+
+Expected Output:
+
+```text
+Employee Deleted Successfully
+```
+
+---
+
+# PART 7 — Important Viva Questions
+
+## 1. What is Salesforce?
+
+Cloud-based CRM platform.
+
+---
+
+## 2. What is Apex?
+
+Salesforce programming language similar to Java.
+
+---
+
+## 3. What is a Custom Object?
+
+User-created database table in Salesforce.
+
+---
+
+## 4. What is SOQL?
+
+Salesforce Object Query Language.
+Used to fetch records.
+
+Example:
+
+```sql
+SELECT Name FROM Employee__c
+```
+
+---
+
+## 5. Difference Between Standard Object and Custom Object
+
+| Standard Object  | Custom Object        |
+| ---------------- | -------------------- |
+| Built-in         | User-created         |
+| Example: Account | Example: Employee__c |
+
+---
+
+## 6. What is CRUD?
+
+* Create
+* Read
+* Update
+* Delete
+
+---
+
+## 7. Why is __c used?
+
+It indicates a custom field/object.
+
+Example:
+
+```text
+Employee__c
+Emp_Name__c
+```
+
+---
+
+# Common Errors + Solutions
+
+## Error 1
+
+```text
+Variable does not exist
+```
+
+### Solution
+
+Field API names are wrong.
+Check:
+Object Manager → Fields.
+
+---
+
+## Error 2
+
+```text
+List has no rows for assignment
+```
+
+### Cause
+
+Employee ID not found.
+
+### Solution
+
+Insert employee first.
+
+---
+
+## Error 3
+
+```text
+Insert failed
+```
+
+### Cause
+
+Required field missing.
+
+### Solution
+
+Fill all required fields.
+
+---
+
+## Error 4
+
+```text
+Invalid type: Employee__c
+```
+
+### Cause
+
+Object not created.
+
+### Solution
+
+Create custom object first.
+
+---
+
+# Quick Flow of Entire Assignment
+
+```text
+Create Salesforce Account
+        ↓
+Create Custom Object
+        ↓
+Create Fields
+        ↓
+Create Apex Class
+        ↓
+Run Anonymous Apex
+        ↓
+Perform CRUD Operations
+```
+
+---
+
+# What To Explain During Practical/Viva
+
+1. What object you created
+2. Which fields were added
+3. What CRUD operations mean
+4. How Apex interacts with Salesforce DB
+5. How SOQL fetches records
+6. Why Execute Anonymous is used
+7. Difference between custom object and table
+
+---
+
+# Short 2-Minute Explanation For Examiner
+
+"This is a console-based Employee Management System developed using Salesforce Apex. I created a custom object named Employee and added fields like Employee ID, Name, Email, Birth Date, and Department. Using Apex class methods, I implemented CRUD operations — insert, display, update, and delete employee records. I executed the program through Execute Anonymous Window in Salesforce Developer Console."
