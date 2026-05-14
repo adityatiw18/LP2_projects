@@ -1,0 +1,445 @@
+Perfect — then your practical is basically this workflow:
+
+# Lightning Application Workflow
+
+```text id="5gf3c9"
+1. Create Custom Object
+2. Create Fields
+3. Add Validation Rules
+4. Write Apex Email Code
+5. Create Lightning App using App Manager
+6. Add Tabs/Object to App
+7. Test Application
+```
+
+This is MUCH easier than Visualforce.
+
+---
+
+# We’ll Build:
+
+# College Management Lightning Application
+
+This matches Assignment 23 exactly.
+
+You only need:
+
+* Object Manager
+* Validation Rules
+* Apex Email Functionality
+* App Manager
+
+No Visualforce needed.
+
+---
+
+# STEP 1 — Create Custom Objects
+
+Go to:
+
+```text id="w28o6v"
+Setup → Object Manager → Create → Custom Object
+```
+
+---
+
+# A. Create Student Object
+
+| Field  | Value    |
+| ------ | -------- |
+| Label  | Student  |
+| Plural | Students |
+
+Save.
+
+---
+
+# B. Create Faculty Object
+
+Similarly create:
+
+| Field  | Value     |
+| ------ | --------- |
+| Label  | Faculty   |
+| Plural | Faculties |
+
+Save.
+
+---
+
+# STEP 2 — Create Fields
+
+---
+
+# Student Fields
+
+Inside Student object create:
+
+| Field Name | Type   |
+| ---------- | ------ |
+| Roll_No    | Number |
+| Marks      | Number |
+| Email      | Email  |
+
+Name field already exists automatically.
+
+---
+
+# Faculty Fields
+
+Inside Faculty object create:
+
+| Field Name   | Type     |
+| ------------ | -------- |
+| Faculty_ID   | Number   |
+| Salary       | Number   |
+| Department   | Picklist |
+| Joining_Date | Date     |
+| Email        | Email    |
+
+Name field already exists automatically.
+
+---
+
+# STEP 3 — Add Validation Rules
+
+Go to:
+
+```text id="e0u61q"
+Object Manager → Student → Validation Rules → New
+```
+
+---
+
+# A. Student Marks Validation
+
+## Rule Name
+
+```text id="7j5v4q"
+Marks_Validation
+```
+
+## Formula
+
+```text id="d2otku"
+OR(Marks__c < 0, Marks__c > 100)
+```
+
+## Error Message
+
+```text id="v7ubef"
+Marks should be between 0 and 100
+```
+
+Save.
+
+---
+
+# B. Roll Number Validation
+
+```text id="8gwh0g"
+Roll_No__c <= 0
+```
+
+Error:
+
+```text id="g2wfdc"
+Roll Number must be greater than 0
+```
+
+---
+
+# C. Faculty Salary Validation
+
+```text id="psgrw1"
+OR(Salary__c < 10000, Salary__c > 500000)
+```
+
+Error:
+
+```text id="6d9ndf"
+Salary must be between 10000 and 500000
+```
+
+---
+
+# D. Joining Date Validation
+
+```text id="d7w4mb"
+Joining_Date__c > TODAY()
+```
+
+Error:
+
+```text id="axm2lq"
+Joining Date cannot be future date
+```
+
+---
+
+# STEP 4 — Apex Email Functionality
+
+Now create Apex class.
+
+Go to:
+
+```text id="of6j7s"
+Setup → Apex Classes → New
+```
+
+Paste:
+
+```java id="qov7rk"
+public class SendEmailController {
+
+    public static void sendEmail() {
+
+        Messaging.SingleEmailMessage mail =
+            new Messaging.SingleEmailMessage();
+
+        mail.setToAddresses(
+            new String[] {'yourgmail@gmail.com'}
+        );
+
+        mail.setSubject(
+            'Salesforce Email Test'
+        );
+
+        mail.setPlainTextBody(
+            'Hello, Email sent successfully from Salesforce Apex.'
+        );
+
+        Messaging.sendEmail(
+            new Messaging.SingleEmailMessage[] {mail}
+        );
+
+        System.debug('Email Sent Successfully');
+    }
+}
+```
+
+Save.
+
+---
+
+# STEP 5 — Run Email Code
+
+Open:
+
+```text id="kq5g2l"
+Developer Console
+```
+
+Then:
+
+```text id="ij3m5h"
+Debug → Open Execute Anonymous Window
+```
+
+Paste:
+
+```java id="09j6em"
+SendEmailController.sendEmail();
+```
+
+Execute.
+
+---
+
+# Output
+
+```text id="3i3vnm"
+Email Sent Successfully
+```
+
+You’ll receive email in Gmail.
+
+---
+
+# STEP 6 — Create Lightning App
+
+Now create actual Lightning Application.
+
+Go to:
+
+```text id="r36iw6"
+Setup → App Manager
+```
+
+Click:
+
+```text id="3o0jrm"
+New Lightning App
+```
+
+---
+
+# Fill Details
+
+| Field    | Value                     |
+| -------- | ------------------------- |
+| App Name | College Management System |
+
+Next.
+
+---
+
+# Add Navigation Items
+
+Add:
+
+* Students
+* Faculties
+
+Move to Selected Items.
+
+Next → Next → Save & Finish.
+
+---
+
+# STEP 7 — Open App
+
+From App Launcher:
+
+```text id="eb7vx0"
+College Management System
+```
+
+Open it.
+
+Now you’ll see:
+
+* Student tab
+* Faculty tab
+* Add records
+* Validation rules working
+
+---
+
+# FULL FLOW OF PRACTICAL
+
+```text id="0f4j08"
+Create Objects
+      ↓
+Create Fields
+      ↓
+Add Validation Rules
+      ↓
+Write Apex Email Class
+      ↓
+Execute Apex Email
+      ↓
+Create Lightning App
+      ↓
+Add Tabs
+      ↓
+Run Application
+```
+
+---
+
+# MOST IMPORTANT VIVA QUESTIONS
+
+---
+
+## What is Lightning Application?
+
+A modern Salesforce application created using Lightning framework.
+
+---
+
+## What is Validation Rule?
+
+Used to validate data before saving.
+
+---
+
+## What is Apex?
+
+Backend programming language of Salesforce.
+
+---
+
+## What is App Manager?
+
+Used to create and manage Lightning apps.
+
+---
+
+## Why use Validation Rules?
+
+To maintain data accuracy and integrity.
+
+---
+
+## What is Messaging.SingleEmailMessage?
+
+Salesforce class used to send emails.
+
+---
+
+## What is TODAY()?
+
+Returns current system date.
+
+---
+
+# Common Errors
+
+---
+
+## Error:
+
+```text id="yn83lg"
+Insufficient Privileges
+```
+
+Fix:
+Use Developer Edition/Admin account.
+
+---
+
+## Error:
+
+```text id="f5wb7g"
+Email not received
+```
+
+Fix:
+Check spam folder.
+Verify Salesforce email deliverability.
+
+Go to:
+
+```text id="zyr0cp"
+Setup → Deliverability
+```
+
+Set:
+
+```text id="1v9z99"
+All Email
+```
+
+---
+
+## Error:
+
+```text id="v5ux3j"
+Field does not exist
+```
+
+Fix:
+Wrong API field name.
+
+Check:
+
+```text id="6qz90k"
+Object Manager → Fields
+```
+
+---
+
+# 2-Minute Explanation for Examiner
+
+“This project is a College Management Lightning Application developed in Salesforce. I created Student and Faculty custom objects and added required fields. Validation rules were implemented to ensure correct data entry such as marks range, salary limits, and valid joining dates. I also developed an Apex class to send email notifications using Salesforce email services. Finally, I created a Lightning App using App Manager and added Student and Faculty tabs for record management.”
