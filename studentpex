@@ -1,0 +1,546 @@
+Let’s start with the best Apex + Visualforce assignment for learning everything together:
+
+# Student Record Management System
+
+Using:
+
+* Apex
+* Visualforce
+* Custom Object
+
+This is the cleanest assignment because it teaches:
+
+* Salesforce database (Custom Object)
+* Backend logic (Apex)
+* Frontend pages (Visualforce)
+* CRUD operations
+
+---
+
+# What You Are Building
+
+A mini web app inside Salesforce where you can:
+
+* Add student
+* View students
+* Delete student
+
+Fields:
+
+* Name
+* Roll Number
+* Class
+* Mobile Number
+
+---
+
+# Architecture of the Project
+
+```text
+Visualforce Page  ← Frontend UI
+        ↓
+Apex Controller   ← Backend Logic
+        ↓
+Custom Object     ← Database
+```
+
+---
+
+# STEP 1 — Create Salesforce Developer Account
+
+Open:
+
+[Salesforce Developer Signup](https://developer.salesforce.com/signup?utm_source=chatgpt.com)
+
+Create free account.
+
+After email verification:
+
+* Login
+* Open Salesforce Dashboard
+
+---
+
+# STEP 2 — Create Custom Object
+
+Go to:
+
+```text
+Setup → Object Manager → Create → Custom Object
+```
+
+Fill:
+
+| Property     | Value    |
+| ------------ | -------- |
+| Label        | Student  |
+| Plural Label | Students |
+| Object Name  | Student  |
+
+Click:
+
+```text
+Save
+```
+
+---
+
+# STEP 3 — Create Fields
+
+Now create fields inside Student object.
+
+Go to:
+
+```text
+Object Manager → Student → Fields & Relationships → New
+```
+
+---
+
+## Field 1 — Roll Number
+
+| Property | Value   |
+| -------- | ------- |
+| Type     | Number  |
+| Label    | Roll_No |
+
+Save.
+
+---
+
+## Field 2 — Class
+
+| Property | Value |
+| -------- | ----- |
+| Type     | Text  |
+| Label    | Class |
+
+Save.
+
+---
+
+## Field 3 — Mobile Number
+
+| Property | Value     |
+| -------- | --------- |
+| Type     | Phone     |
+| Label    | Mobile_No |
+
+Save.
+
+---
+
+# IMPORTANT THING TO UNDERSTAND
+
+Salesforce automatically creates:
+
+```text
+Student__c
+```
+
+This becomes your table/object name.
+
+Fields become:
+
+```text
+Roll_No__c
+Class__c
+Mobile_No__c
+```
+
+`__c` means:
+
+```text
+Custom
+```
+
+---
+
+# STEP 4 — Create Apex Controller
+
+Go to:
+
+```text
+Setup → Apex Classes → New
+```
+
+Paste this:
+
+```java
+public class StudentController {
+
+    // Variables linked with form
+    public Student__c stu {get; set;}
+
+    // List to display students
+    public List<Student__c> studentList {get; set;}
+
+    // Constructor
+    public StudentController() {
+
+        stu = new Student__c();
+
+        loadStudents();
+    }
+
+    // INSERT STUDENT
+    public void saveStudent() {
+
+        insert stu;
+
+        stu = new Student__c();
+
+        loadStudents();
+    }
+
+    // LOAD ALL STUDENTS
+    public void loadStudents() {
+
+        studentList = [
+            SELECT Id,
+                   Name,
+                   Roll_No__c,
+                   Class__c,
+                   Mobile_No__c
+            FROM Student__c
+        ];
+    }
+
+    // DELETE STUDENT
+    public void deleteStudent() {
+
+        String studentId =
+            ApexPages.currentPage()
+                     .getParameters()
+                     .get('sid');
+
+        Student__c s = [
+            SELECT Id
+            FROM Student__c
+            WHERE Id = :studentId
+        ];
+
+        delete s;
+
+        loadStudents();
+    }
+}
+```
+
+Save it.
+
+---
+
+# Understand This Controller Properly
+
+---
+
+## 1. `Student__c stu`
+
+Stores one student record.
+
+Equivalent to:
+
+```text
+One row of table
+```
+
+---
+
+## 2. `studentList`
+
+Stores all students.
+
+Equivalent to:
+
+```text
+SELECT * FROM Student
+```
+
+---
+
+## 3. `saveStudent()`
+
+Runs when Save button clicked.
+
+```java
+insert stu;
+```
+
+Adds record into Salesforce database.
+
+---
+
+## 4. `loadStudents()`
+
+Fetches all students.
+
+Uses SOQL:
+
+```sql
+SELECT fields FROM Student__c
+```
+
+---
+
+## 5. `deleteStudent()`
+
+Deletes student using record ID.
+
+---
+
+# STEP 5 — Create Visualforce Page
+
+Go to:
+
+```text
+Setup → Visualforce Pages → New
+```
+
+Name:
+
+```text
+StudentPage
+```
+
+Paste:
+
+```html
+<apex:page controller="StudentController">
+
+    <apex:form>
+
+        <h1>Student Management System</h1>
+
+        <apex:pageBlock title="Add Student">
+
+            <apex:pageBlockSection columns="1">
+
+                <apex:inputField value="{!stu.Name}" />
+
+                <apex:inputField value="{!stu.Roll_No__c}" />
+
+                <apex:inputField value="{!stu.Class__c}" />
+
+                <apex:inputField value="{!stu.Mobile_No__c}" />
+
+            </apex:pageBlockSection>
+
+            <apex:commandButton
+                value="Save Student"
+                action="{!saveStudent}"
+                rerender="table"
+            />
+
+        </apex:pageBlock>
+
+        <apex:pageBlock title="Student Records" id="table">
+
+            <apex:pageBlockTable value="{!studentList}" var="s">
+
+                <apex:column value="{!s.Name}" />
+
+                <apex:column value="{!s.Roll_No__c}" />
+
+                <apex:column value="{!s.Class__c}" />
+
+                <apex:column value="{!s.Mobile_No__c}" />
+
+                <apex:column>
+
+                    <apex:commandLink
+                        value="Delete"
+                        action="{!deleteStudent}">
+
+                        <apex:param
+                            name="sid"
+                            value="{!s.Id}" />
+
+                    </apex:commandLink>
+
+                </apex:column>
+
+            </apex:pageBlockTable>
+
+        </apex:pageBlock>
+
+    </apex:form>
+
+</apex:page>
+```
+
+Save.
+
+---
+
+# STEP 6 — Run the Application
+
+Open page URL:
+
+```text
+/apex/StudentPage
+```
+
+OR
+
+Click:
+
+```text
+Preview
+```
+
+---
+
+# What You’ll See
+
+A webpage with:
+
+* Input fields
+* Save button
+* Student table
+* Delete option
+
+---
+
+# How Flow Works
+
+```text
+User fills form
+      ↓
+Visualforce sends data
+      ↓
+Apex controller receives
+      ↓
+insert stu
+      ↓
+Data stored in Student__c
+      ↓
+Table refreshes
+```
+
+---
+
+# Viva Questions
+
+---
+
+## What is Visualforce?
+
+Frontend framework in Salesforce used to create UI pages.
+
+---
+
+## What is Apex?
+
+Backend programming language of Salesforce.
+
+Similar to Java.
+
+---
+
+## What is SOQL?
+
+Salesforce Object Query Language.
+
+Used to fetch records.
+
+Example:
+
+```sql
+SELECT Name FROM Student__c
+```
+
+---
+
+## Difference Between Apex and Visualforce
+
+| Apex      | Visualforce |
+| --------- | ----------- |
+| Backend   | Frontend    |
+| Logic     | UI          |
+| Java-like | HTML-like   |
+
+---
+
+## Why `__c` is used?
+
+Represents custom object/field.
+
+Example:
+
+```text
+Student__c
+Roll_No__c
+```
+
+---
+
+## What is Controller?
+
+Acts as bridge between:
+
+* UI
+* Database
+
+---
+
+# Common Errors
+
+---
+
+## Error:
+
+```text
+Unknown property
+```
+
+### Cause:
+
+Wrong field name.
+
+### Fix:
+
+Check API name in Object Manager.
+
+---
+
+## Error:
+
+```text
+Save doesn’t work
+```
+
+### Cause:
+
+Required field missing.
+
+---
+
+## Error:
+
+```text
+List has no rows
+```
+
+### Cause:
+
+Delete query record not found.
+
+---
+
+# What Examiner Usually Asks
+
+1. Explain MVC architecture
+2. Difference between Apex and Java
+3. What is SOQL
+4. Why use Visualforce
+5. What is Custom Object
+6. Explain CRUD operations
+7. What is Controller
+8. Why rerender is used
+
+---
+
+# 2-Minute Practical Explanation
+
+“This project is a Student Record Management System developed using Salesforce Apex and Visualforce. I created a custom object named Student and fields like Roll Number, Class, and Mobile Number. I developed an Apex controller for insert, display, and delete operations and connected it with a Visualforce frontend page. The application performs CRUD operations on Salesforce database records.”
